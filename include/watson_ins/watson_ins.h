@@ -4,7 +4,8 @@
 #include <sstream>
 #include <ros/ros.h>
 #include <ros/console.h>
-#include "sensor_msgs/Image.h"
+#include "sensor_msgs/NavSatFix.h"
+#include "sensor_msgs/Imu.h"
 
 class INS{
   public:
@@ -16,9 +17,10 @@ class INS{
     //Subscribers
      
     //Publishers
-    ros::Publisher w;
+    ros::Publisher imu_pub;
+    ros::Publisher nav_pub;
      
-
+    std::string m_DeviceName;
 
 };
 
