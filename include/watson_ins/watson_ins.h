@@ -4,6 +4,7 @@
 #include <sstream>
 #include <ros/ros.h>
 #include <ros/console.h>
+#include "serialIO.h"
 #include "sensor_msgs/NavSatFix.h"
 #include "sensor_msgs/Imu.h"
 
@@ -15,12 +16,11 @@ class INS{
     ros::NodeHandle n;
 
     //Subscribers
-     
+    
     //Publishers
     ros::Publisher imu_pub;
     ros::Publisher nav_pub;
      
-    std::string m_DeviceName;
 
 };
 

@@ -6,17 +6,14 @@
 #include "std_msgs/String.h"
 
 #include <iostream>
-#include <sys/types.h>
-#include <linux/serial.h>
-#include <unistd.h>
-#include <termios.h>
 
 
 INS::INS()
 {
   //Advertise INS Data
   imu_pub = n.advertise<sensor_msgs::Imu>("/ins/imu", 20); 
-  nav_pub = n.advertise<sensor_msgs::NavSatFix>("/ins/gps", 20); 
+  nav_pub = n.advertise<sensor_msgs::NavSatFix>("/ins/gps", 20);
+
 }
 
 
@@ -27,7 +24,18 @@ INS::INS()
 int main(int argc, char *argv[]){
   ros::init(argc, argv, "watson_ins");
   INS ins;
-  ros::spin();
+  serialIO serial_comm;
+  serial_comm.openSerial();
+    
+
+  ros::Rate loop_rate(5); 
+  while(ros::ok()){
+    ros::spinOnce();
+    
+    if(serial_comm.insAvailability()) 
+      serial_comm.readSerial();
+     
+  }
+  loop_rate.sleep();
   
-  return 0;
 }

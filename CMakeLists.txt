@@ -9,6 +9,7 @@ project(watson_ins)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  serial
   rospy
   std_msgs
   geometry_msgs
@@ -109,7 +110,8 @@ catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES watson_ins
   CATKIN_DEPENDS 
-  roscpp 
+  roscpp
+  serial 
   rospy 
   std_msgs 
   sensor_msgs 

@@ -4,28 +4,6 @@
 #include "serialIO.h"
 #include <ros/console.h>
 
-#include <iostream>
-#include <sys/types.h>
-#include <linux/serial.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <termios.h>
-
-serialIO::serialIO()
-{  
-  m_DeviceName = "/dev/ttyUSB0";
-}
-
-int serialIO::openSerial()
-{
-  m_Device = open(m_DeviceName.c_str(), std::ios::in, std::ios::out);
-  if(m_Device < 0)
-  {
-    ROS_ERROR("Error Opening Device: %s", m_DeviceName.c_str());    
-  }
-
-  return 1;
-}
 
 /**
  * RS-232 Output Format:
@@ -34,9 +12,47 @@ int serialIO::openSerial()
  *    - Maximum rate is 71.11 strings per second (dependent on baud rate)
  *
  */
-int serialIO::readSerial(char *buff)
-{
-  ssize_t  BRead = read(m_Device, buff, BUFF_SIZE);
-  ROS_INFO("buff: [ %s ]", buff); 
+
+serialIO::serialIO()
+{  
+  m_DeviceName = "/dev/ttyUSB0";
 }
 
+int serialIO::openSerial()
+{
+  //m_Device = open(m_DeviceName.c_str(), std::ios::in, std::ios::out);
+  try
+  { 
+    m_Device.setPort(m_DeviceName);
+    m_Device.setBaudrate(9600);
+    serial::Timeout time_out = serial::Timeout::simpleTimeout(1000);
+    m_Device.setTimeout(time_out);
+    m_Device.open();
+  }
+  catch(serial::IOException& e)
+  {
+    ROS_ERROR("Error Opening Device: %s", m_DeviceName.c_str());
+    return -1; 
+  }
+  
+  if(m_Device.isOpen())
+    ROS_INFO("INS Port Open"); 
+  
+  return 0;
+}
+
+int serialIO::insAvailability()
+{
+  if(m_Device.available())
+    ROS_INFO("Reading"); 
+    return 1;
+  
+  return 0;
+}
+
+std::string serialIO::readSerial()
+{
+  //m_Device.available() returns the number of characters in the buffer
+  size_t num_chars = m_Device.available(); 
+  std::string buff = m_Device.read(num_chars);
+}
