@@ -12,7 +12,8 @@ INS::INS()
 {
   //Advertise INS Data
   imu_pub = n.advertise<sensor_msgs::Imu>("/ins/imu", 20); 
-  nav_pub = n.advertise<sensor_msgs::NavSatFix>("/ins/gps", 20);
+  //nav_pub = n.advertise<sensor_msgs::NavSatFix>("/ins/gps", 20);
+  nav_pub = n.advertise<std_msgs::String>("/ins/String", 20);
 
 }
 
@@ -31,11 +32,13 @@ int main(int argc, char *argv[]){
   ros::Rate loop_rate(5); 
   while(ros::ok()){
     ros::spinOnce();
-    
-    if(serial_comm.insAvailability()) 
-      serial_comm.readSerial();
+    std_msgs::String ins_msg; 
+    if(serial_comm.insAvailability()) {
+      ins_msg.data = serial_comm.readSerial();
+      ins.nav_pub.publish(ins_msg);
+    } 
+    loop_rate.sleep();
      
   }
-  loop_rate.sleep();
   
 }

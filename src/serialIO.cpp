@@ -53,6 +53,9 @@ int serialIO::insAvailability()
 std::string serialIO::readSerial()
 {
   //m_Device.available() returns the number of characters in the buffer
-  size_t num_chars = m_Device.available(); 
-  std::string buff = m_Device.read(num_chars);
+  size_t num_chars = m_Device.available();
+  ROS_INFO("Chars read: %d", num_chars); 
+  return m_Device.read(m_Device.available());
+  //std::string buff_new = buff.substr(0,63);
+  //ROS_INFO("String: %s", buff.c_str());
 }
