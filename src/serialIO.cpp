@@ -59,3 +59,15 @@ std::string serialIO::readSerial()
   //std::string buff_new = buff.substr(0,63);
   //ROS_INFO("String: %s", buff.c_str());
 }
+
+sensor_msgs::NavSatFix getGPS(std::string raw_ascii)
+{
+  sensor_msgs::NavSatFix msg;
+  return msg;
+} 
+sensor_msgs::Imu getImu(std::string raw_ascii)
+{
+  sensor_msgs::Imu msg;
+  return msg;
+}
+
