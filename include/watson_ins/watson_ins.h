@@ -20,6 +20,7 @@ class INS{
     //Publishers
     ros::Publisher imu_pub;
     ros::Publisher nav_pub;
+    ros::Publisher test_pub;
      
 
 };
