@@ -1,4 +1,4 @@
-#i#include "watson_ins.h"
+#include "watson_ins.h"
 #include "serialIO.h"
 #include <math.h>
 #include <iostream>
@@ -59,14 +59,14 @@ bool check_plus_minus(std::string data)
 //converts feet to meters
 float feet_to_meters(float num)
 {
-  meters = num/3.2808; 
+  float meters = num/3.2808; 
   return meters;
 }
 
 //converts acceleration in G's to m/s^2
 float gs_to_ms2(float num)
 {
-  ms2 = num/0.101972;
+  float ms2 = num/0.101972;
   return ms2;
 }
 
