@@ -94,14 +94,15 @@ void populate_gps_data(INS &ins, std::string* parsed_data)
     gps_msg.longitude = std::atof((parsed_data[17].substr(1)).c_str())*-1;
   }
 
-  if (check_plus_minus(parsed_data[18]))
-  {
-    gps_msg.altitude = feet_to_meters(std::atof((parsed_data[18].substr(1)).c_str()));
-  }
-  else
-  {
-    gps_msg.altitude = feet_to_meters(std::atof((parsed_data[18].substr(1)).c_str())*-1);
-  }
+
+  //if (check_plus_minus(parsed_data[18]))
+  //{
+  gps_msg.altitude = feet_to_meters(std::atof((parsed_data[18].substr(1)).c_str()));
+  //}
+  //else
+  //{
+    //gps_msg.altitude = feet_to_meters(std::atof((parsed_data[18].substr(1)).c_str()))*-1;
+  //}
 
   ins.nav_pub.publish(gps_msg);
 }
