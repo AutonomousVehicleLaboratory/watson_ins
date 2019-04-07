@@ -20,9 +20,37 @@ INS::INS()
 
 }
 
-
 //parse data string from serial port
 std::string* parse_ins_data(std::string data)
+{
+  char carriage_return = '\r';
+  size_t pos = 0;
+  while (data.substr(0,1) != "T" && data.substr(0,1) != "G" && data.substr(0,1) != "I" && data.find(carriage_return) != std::string::npos)
+  {
+    pos = data.find(carriage_return);
+    data.erase(0,pos+1);
+  }
+
+  char delimiter = ' ';
+  std::string token;
+  static std::string serial_out[20];
+
+  int i=0;
+  while ((pos=data.find(delimiter)) != std::string::npos && i<21)
+  {
+    token = data.substr(0,pos);
+    serial_out[i] = token; 
+    data.erase(0, pos+1);
+    i++;
+  }
+  //serial_out[i] = data;
+
+  return serial_out;
+}
+
+
+//parse data string from serial port
+/*std::string* parse_ins_data(std::string data)
 {
   char delimiter = ' ';
   size_t pos = 0;
@@ -40,60 +68,8 @@ std::string* parse_ins_data(std::string data)
   //serial_out[i] = data;
 
   return serial_out;
-}
+}*/
 
-std::string* trim_data(std::string data)
-{
-  char delimiter = ' ';
-  size_t pos = 0;
-  std::string token;
-  static std::string serial_out[50];
-  int num = 0;
-  int length = 0;
-
-  int i=0;
-  while ((pos=data.find(delimiter)) != std::string::npos)
-  {
-    token = data.substr(0,pos);
-    length = token.size()-1;
-
-    if (length > 0)
-    {
-std::cout<<"hello3"<<std::endl;
-    	if (token.substr(length,1) == "G" || token.substr(length,1) == "I" || token.substr(length,1) == "T")
-    	{
-	    serial_out[i] = token.substr(length,1);
-    	}
-        else
-        {
-	std::cout<<"hello"<<std::endl;
-    	    serial_out[i] = token; 
-std::cout<<"hello4"<<std::endl;
-        }
-    }
-    else
-    {
-    	    serial_out[i] = token; 
-    }
-std::cout<<"token"<<token<<std::endl;
-std::cout<<"hello2"<<std::endl;
-    data.erase(0, pos+1);
-    i++;
-  }
-
-  std::cout<<"i"<<i<<std::endl;
-  for (int j=i;j>=0;j--)
-  {
-	std::cout<<"serial_out"<<serial_out[j]<<std::endl<<j<<std::endl;
-     if (serial_out[j] == "G" || serial_out[j] == "I" || serial_out[j] == "T")
-     {
-	num = j;
-     }
-  }
-
-  std::cout<<"num"<<num<<std::endl;
-  return &serial_out[num];
-}
 
 //checks if string is positive or negative number
 bool check_plus_minus(std::string data)
@@ -304,9 +280,8 @@ int main(int argc, char *argv[]){
     if(serial_comm.insAvailability()) {
       ins_msg.data = serial_comm.readSerial();
       parsed_data = parse_ins_data(ins_msg.data);
-      //parsed_data = trim_data(ins_msg.data);
 
-      //std::cout<<"parsed"<<parsed_data[0]<<std::endl;
+      std::cout<<"parsed"<<parsed_data[0]<<std::endl;
 
 ///Take into account +/- and *******
       //both gps and imu data are available
