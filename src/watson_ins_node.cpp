@@ -5,6 +5,7 @@
 #include <string>
 #include "std_msgs/String.h"
 #include "sensor_msgs/NavSatFix.h"
+#include "std_msgs/Time.h"
 #include <tf2/LinearMath/Quaternion.h>
 #include <iostream>
 #include <tf/transform_datatypes.h>
@@ -16,6 +17,7 @@ INS::INS()
   //Advertise INS Data
   imu_pub = n.advertise<sensor_msgs::Imu>("/ins/imu", 20);
   nav_pub = n.advertise<sensor_msgs::NavSatFix>("/ins/gps", 20);
+  //time_pub = n.advertise<std_msgs::Time>("/ins/time", 20);
   test_pub = n.advertise<std_msgs::String>("/ins/String", 20);
 
 }
@@ -103,7 +105,16 @@ void populate_gps_data(INS &ins, std::string* parsed_data)
 {
   //see if value is positive or negative and turn to float accordingly  
 
-  sensor_msgs::NavSatFix gps_msg; 
+  sensor_msgs::NavSatFix gps_msg;
+  //std_msgs::Time gps_time_msg; 
+  
+  std::cout<<parsed_data[1]<<std::endl;
+
+
+  int hours = std::atof((parsed_data[1].substr(0,2)).c_str())*60*60;
+  int mins = std::atof((parsed_data[1].substr(2,2)).c_str())*60;
+  int secs = std::atof((parsed_data[1].substr(4,2)).c_str());
+  gps_msg.header.stamp.sec = hours+mins+secs;
 
   if (check_plus_minus(parsed_data[16]))
   {
@@ -134,6 +145,7 @@ void populate_gps_data(INS &ins, std::string* parsed_data)
   //}
 
   ins.nav_pub.publish(gps_msg);
+  //ins.time_pub.publish(gps_time_msg);
 }
 
 void populate_imu_data(INS &ins, std::string* parsed_data)
@@ -281,7 +293,7 @@ int main(int argc, char *argv[]){
       ins_msg.data = serial_comm.readSerial();
       parsed_data = parse_ins_data(ins_msg.data);
 
-      std::cout<<"parsed"<<parsed_data[0]<<std::endl;
+      //std::cout<<"parsed"<<parsed_data[0]<<std::endl;
 
 ///Take into account +/- and *******
       //both gps and imu data are available
