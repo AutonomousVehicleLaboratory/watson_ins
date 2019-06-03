@@ -60,6 +60,11 @@ std::string serialIO::readSerial()
   //ROS_INFO("String: %s", buff.c_str());
 }
 
+size_t serialIO::serialBufferSize()
+{
+  return m_Device.available();
+}
+
 sensor_msgs::NavSatFix getGPS(std::string raw_ascii)
 {
   sensor_msgs::NavSatFix msg;
@@ -70,4 +75,10 @@ sensor_msgs::Imu getImu(std::string raw_ascii)
   sensor_msgs::Imu msg;
   return msg;
 }
+
+/*std_msgs::Time getTime(std::string raw_ascii)
+{
+  std_msgs::Time msg;
+  return msg;
+}*/
 

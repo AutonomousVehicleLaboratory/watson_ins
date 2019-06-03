@@ -15,8 +15,8 @@
 INS::INS()
 {
   //Advertise INS Data
-  imu_pub = n.advertise<sensor_msgs::Imu>("/ins/imu", 20);
-  nav_pub = n.advertise<sensor_msgs::NavSatFix>("/ins/gps", 20);
+  imu_pub = n.advertise<sensor_msgs::Imu>("/imu_raw", 20);
+  nav_pub = n.advertise<sensor_msgs::NavSatFix>("/fix", 20);
   //time_pub = n.advertise<std_msgs::Time>("/ins/time", 20);
   test_pub = n.advertise<std_msgs::String>("/ins/String", 20);
 
@@ -46,7 +46,7 @@ std::string* parse_ins_data(std::string data)
     i++;
   }
   //serial_out[i] = data;
-
+  //std::cout<<i<<std::endl;
   return serial_out;
 }
 
@@ -108,7 +108,7 @@ void populate_gps_data(INS &ins, std::string* parsed_data)
   sensor_msgs::NavSatFix gps_msg;
   //std_msgs::Time gps_time_msg; 
   
-  std::cout<<parsed_data[1]<<std::endl;
+  //std::cout<<parsed_data[1]<<std::endl;
 
 
   int hours = std::atof((parsed_data[1].substr(0,2)).c_str())*60*60;
@@ -290,26 +290,34 @@ int main(int argc, char *argv[]){
     std_msgs::String ins_msg;
 
     if(serial_comm.insAvailability()) {
-      ins_msg.data = serial_comm.readSerial();
-      parsed_data = parse_ins_data(ins_msg.data);
+      //std::cout<<serial_comm.serialBufferSize()<<std::endl;
 
-      //std::cout<<"parsed"<<parsed_data[0]<<std::endl;
+      if (serial_comm.serialBufferSize() > 160)
+      {
+      	ins_msg.data = serial_comm.readSerial();
+      	parsed_data = parse_ins_data(ins_msg.data);
+
+      //sd::cout<<"parsed"<<parsed_data[0]<<std::endl;
 
 ///Take into account +/- and *******
-      //both gps and imu data are available
-      if (parsed_data[0] == "G" || parsed_data[0] == "T")
-      {
-        populate_gps_data(ins, parsed_data);
-        populate_imu_data(ins, parsed_data);
-      }
 
-      //gps data not available so only populate imu data
-      else if (parsed_data[0] == "I" )
-      {
-        populate_imu_data(ins, parsed_data);
-      }
+	
+	      //both gps and imu data are available
+	      if (parsed_data[0] == "G" || parsed_data[0] == "T")
+	      {
+		populate_gps_data(ins, parsed_data);
+		populate_imu_data(ins, parsed_data);
+	      }
 
-      ins.test_pub.publish(ins_msg);
+	      //gps data not available so only populate imu data
+	      else if (parsed_data[0] == "I" )
+	      {
+		populate_imu_data(ins, parsed_data);
+	      }
+
+	      ins.test_pub.publish(ins_msg);
+	}
+
     }
     loop_rate.sleep();
 
