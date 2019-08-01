@@ -261,6 +261,7 @@ void populate_imu_data(INS &ins, std::string* parsed_data)
 
   myQuaternion.setRPY(roll, pitch, yaw);
   tf::quaternionTFToMsg(myQuaternion, imu_msg.orientation);
+  imu_msg.header.stamp = ros::Time::now();
 
   imu_msg.angular_velocity.x = x_angular;
   imu_msg.angular_velocity.y = y_angular;
