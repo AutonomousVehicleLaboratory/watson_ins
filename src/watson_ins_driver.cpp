@@ -18,7 +18,7 @@ WatsonINSDriver::WatsonINSDriver(std::string path, int baud, int timeout_ms)
 
 #define Hour2Sec(H) (H*60*60)
 #define Min2Sec(H) (H*60)
-#define TSec2Nanosec(TS) (TS * 1000)
+#define TSec2Nanosec(TS) (TS*100*1000)
 void WatsonINSDriver::parseGPS(sensor_msgs::NavSatFix &gpsMsg)
 {
   int h, m, s, ts;
@@ -26,6 +26,7 @@ void WatsonINSDriver::parseGPS(sensor_msgs::NavSatFix &gpsMsg)
 
   gpsMsg.header.seq = gpsMsgSeq++;
   gpsMsg.header.stamp.sec = Hour2Sec(h) + Min2Sec(m) + s; 
+  gpsMsg.header.stamp.nsec = TSec2Nanosec(ts);
 
   // Nav Sat Status
   sensor_msgs::NavSatStatus navSatStatus;
