@@ -5,14 +5,14 @@
 #include "sensor_msgs/Imu.h"
 
 struct ins_data_t {
-  char       dataType[2]; // G, T, g, t, i, r
-  char      timestamp[9]; // HHMMSS.S
-  char            yaw[7]; // 2
-  char          pitch[7]; // 3
-  char           roll[6]; // 4
-  char         xAccel[6]; // 5
-  char         yAccel[6]; // 6
-  char         zAccel[6]; // 7
+  char       dataType[2]; 
+  char      timestamp[9];
+  char            yaw[7]; 
+  char          pitch[7]; 
+  char           roll[6]; 
+  char         xAccel[6]; 
+  char         yAccel[6]; 
+  char         zAccel[6]; 
   char     xAngleRate[6];
   char     yAngleRate[6];
   char     zAngleRate[6];
