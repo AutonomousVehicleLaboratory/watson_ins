@@ -4,6 +4,12 @@
 #include "sensor_msgs/NavSatFix.h"
 #include "sensor_msgs/Imu.h"
 
+// NOTE: Change this data structure depending on the enabled Watson channels.
+// Yes, I know, unfortunately, for sake of code compactness, the driver will
+// have to be recompiled everytime the INS output channels are modified.
+//
+// This struct is overlayed on top of the received buffer from the INS, and the
+// string fields can then be directly accessed.
 struct ins_data_t {
   char       dataType[2]; 
   char      timestamp[9];
