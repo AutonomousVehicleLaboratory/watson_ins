@@ -10,22 +10,29 @@
 //
 // This struct is overlayed on top of the received buffer from the INS, and the
 // string fields can then be directly accessed.
+// I 000000.0 +001.0 +00.2 000.0 +0.00 -0.02 -0.99 -0.00 +0.00 -0.99 +00.0 -00.0 +00.0 -00.0 ****.* +**.***** +***.***** *****
+//
 struct ins_data_t {
-  char       dataType[2]; 
-  char      timestamp[9];
-  char            yaw[7]; 
-  char          pitch[7]; 
-  char           roll[6]; 
-  char         xAccel[6]; 
-  char         yAccel[6]; 
-  char         zAccel[6]; 
-  char     xAngleRate[6];
-  char     yAngleRate[6];
-  char     zAngleRate[6];
-  char            lat[10];
-  char            lon[11];
-  char            alt[6];
-  char            _cr[1];
+  char       dataType[2]; // 0
+  char      timestamp[9]; // 1
+  char           roll[7]; // 4
+  char          pitch[6]; // 3
+  char            yaw[6]; // 2
+  char         xAccel[6]; // 5
+  char         yAccel[6]; // 6
+  char         zAccel[6]; // 7
+  char   forwardAccel[6]; // 8, NOTE: not used
+  char   lateralAccel[6]; // 9, NOTE: not used
+  char  verticalAccel[6]; // 10, NOTE: not used
+  char     xAngleRate[6]; // 11
+  char     yAngleRate[6]; // 12
+  char     zAngleRate[6]; // 13
+  char     hedingRate[6]; // 14, NOTE: not used
+  char     forwardVel[7]; // 15, NOTE: not used
+  char            lat[10];// 16
+  char            lon[11];// 17
+  char            alt[5]; // 18
+  char            _cr[1]; // 19
 };
 
 class WatsonINSDriver {
@@ -39,7 +46,8 @@ class WatsonINSDriver {
   private:
     serial::Serial* serDev;
     int gpsMsgSeq;
-    struct ins_data_t insData;
+    uint8_t buf[4096];
+    struct ins_data_t *insData;
 
     void parseIMU(sensor_msgs::Imu &imuMsg);
     void parseGPS(sensor_msgs::NavSatFix &gpsMsg);

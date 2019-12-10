@@ -13,7 +13,6 @@ WatsonINSDriver::WatsonINSDriver(std::string path, int baud, int timeout_ms)
   ROS_INFO("Successfully connected to Watson INS");
 
   gpsMsgSeq = 0;
-  memset(&insData, 0, sizeof(struct ins_data_t));
 }
 
 #define Hour2Sec(H) (H*60*60)
@@ -22,7 +21,8 @@ WatsonINSDriver::WatsonINSDriver(std::string path, int baud, int timeout_ms)
 void WatsonINSDriver::parseGPS(sensor_msgs::NavSatFix &gpsMsg)
 {
   int h, m, s, ts;
-  sscanf(insData.timestamp, "%2d%2d%2d.%1d", &h, &m, &s, &ts);
+
+  sscanf(insData->timestamp, "%2d%2d%2d.%1d", &h, &m, &s, &ts);
 
   gpsMsg.header.seq = gpsMsgSeq++;
   gpsMsg.header.stamp.sec = Hour2Sec(h) + Min2Sec(m) + s; 
@@ -33,9 +33,9 @@ void WatsonINSDriver::parseGPS(sensor_msgs::NavSatFix &gpsMsg)
   navSatStatus.status = sensor_msgs::NavSatStatus::STATUS_SBAS_FIX;
   // GPS Msg
   gpsMsg.status = navSatStatus;
-  sscanf(insData.lat, "%lf", &gpsMsg.latitude);
-  sscanf(insData.lon, "%lf", &gpsMsg.longitude);
-  sscanf(insData.alt, "%lf", &gpsMsg.altitude);
+  sscanf(insData->lat, "%lf", &gpsMsg.latitude);
+  sscanf(insData->lon, "%lf", &gpsMsg.longitude);
+  sscanf(insData->alt, "%lf", &gpsMsg.altitude);
 }
 
 #define Degree2Radians(D) (D * M_PI/180)
@@ -47,18 +47,18 @@ void WatsonINSDriver::parseIMU(sensor_msgs::Imu &imuMsg)
   double x_accel, y_accel, z_accel;
   double forward_accel, lateral_accel, vertical_accel;
 
-  sscanf(insData.yaw, "%lf", &yaw);
-  sscanf(insData.pitch, "%lf", &pitch);
-  sscanf(insData.roll, "%lf", &roll);
+  sscanf(insData->yaw, "%lf", &yaw);
+  sscanf(insData->pitch, "%lf", &pitch);
+  sscanf(insData->roll, "%lf", &roll);
   tf::Quaternion quat_tf;
   quat_tf.setRPY(roll, pitch, yaw);
 
-  sscanf(insData.xAccel, "%lf", &x_accel);
-  sscanf(insData.yAccel, "%lf", &y_accel);
-  sscanf(insData.zAccel, "%lf", &z_accel);
-  sscanf(insData.xAngleRate, "%lf", &x_angular);
-  sscanf(insData.yAngleRate, "%lf", &y_angular);
-  sscanf(insData.zAngleRate, "%lf", &z_angular);
+  sscanf(insData->xAccel, "%lf", &x_accel);
+  sscanf(insData->yAccel, "%lf", &y_accel);
+  sscanf(insData->zAccel, "%lf", &z_accel);
+  sscanf(insData->xAngleRate, "%lf", &x_angular);
+  sscanf(insData->yAngleRate, "%lf", &y_angular);
+  sscanf(insData->zAngleRate, "%lf", &z_angular);
 
   imuMsg.header.stamp = ros::Time::now();
   tf::quaternionTFToMsg(quat_tf, imuMsg.orientation);
@@ -76,33 +76,35 @@ void WatsonINSDriver::read(sensor_msgs::Imu &imuMsg,
 {
   validImu = validFix = false;
 
-  memset(&insData, 0, sizeof(struct ins_data_t));
-  if (sizeof(struct ins_data_t) != serDev->read((uint8_t*)&insData,
-                                                sizeof(struct ins_data_t))) {
+  memset(&buf, 0, 4096);
+  if (-1 == serDev->read(buf, 4096)) {
+    ROS_WARN("Read from serial device failed");
     return;
-  }
+  } 
 
-  switch (insData.dataType[0]) {
-    case 'G':
-    case 'T':
-      ROS_INFO("Both GPS and IMU data is available");
-      parseGPS(fixMsg);
-      parseIMU(imuMsg);
-      validImu = validFix = true;
-      break;
-    case 'I':
-      // Only IMU data is available
-      parseIMU(imuMsg);
-      validImu = true;
-      break;
-    case 'g':
-    case 't':
-    case 'i':
-    case 'r':
-      ROS_WARN("Calculated altitude/heading error exceeds ranges");
-      break;
-    default:
-      return;
+  while (true) {
+    switch (buf[0]) {
+      case 'G':
+      case 'T':
+        ROS_INFO("Both GPS and IMU data is available");
+        parseGPS(fixMsg);
+        parseIMU(imuMsg);
+        validImu = validFix = true;
+        break;
+      case 'I':
+        ROS_INFO("Only IMU data is available");
+        parseIMU(imuMsg);
+        validImu = true;
+        break;
+      case 'g':
+      case 't':
+      case 'i':
+      case 'r':
+        ROS_WARN("Calculated altitude/heading error exceeds ranges");
+        break;
+      default:
+        return;
+    }
   }
 }
 
