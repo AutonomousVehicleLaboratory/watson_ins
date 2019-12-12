@@ -10,7 +10,6 @@
 //
 // This struct is overlayed on top of the received buffer from the INS, and the
 // string fields can then be directly accessed.
-// I 000000.0 +001.0 +00.2 000.0 +0.00 -0.02 -0.99 -0.00 +0.00 -0.99 +00.0 -00.0 +00.0 -00.0 ****.* +**.***** +***.***** *****
 //
 struct ins_data_t {
   char       dataType[2]; // 0
@@ -44,11 +43,12 @@ class WatsonINSDriver {
               bool &validImu, bool &validFix);
 
   private:
+    static const int readRetryCount = 10;
     serial::Serial* serDev;
     int gpsMsgSeq;
-    uint8_t buf[4096];
-    struct ins_data_t *insData;
+    struct ins_data_t insData;
 
+    bool validCmd(void);
     void parseIMU(sensor_msgs::Imu &imuMsg);
     void parseGPS(sensor_msgs::NavSatFix &gpsMsg);
 };
