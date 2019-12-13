@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
   int baud;
   int timeout_ms;
 
-  ros::init(argc, argv, "watson_ins");
+  ros::init(argc, argv, "watson_ins2");
 
   ros::NodeHandle n;
 
@@ -28,8 +28,8 @@ int main(int argc, char* argv[])
 
   WatsonINSDriver INSDrv(path, baud, timeout_ms);
 
-  ros::Publisher imu_pub = n.advertise<sensor_msgs::Imu>("/imu_raw", QUEUE_LENGTH);
-  ros::Publisher nav_pub = n.advertise<sensor_msgs::NavSatFix>("/fix", QUEUE_LENGTH);
+  ros::Publisher imu_pub = n.advertise<sensor_msgs::Imu>("/imu_raw2", QUEUE_LENGTH);
+  ros::Publisher nav_pub = n.advertise<sensor_msgs::NavSatFix>("/fix2", QUEUE_LENGTH);
   ros::Rate loop_rate(LOOP_RATE);
  
   while (ros::ok()) { 
@@ -38,11 +38,14 @@ int main(int argc, char* argv[])
       sensor_msgs::Imu imu_msg;
       sensor_msgs::NavSatFix gps_msg;
       INSDrv.read(imu_msg, gps_msg, validIMU, validGPS);
-      printf("validIMU=%d validGPS=%d\n", validIMU, validGPS);
-      if (validIMU)
+      if (validIMU) {
+        ROS_INFO("Publishing valid IMU message");
         imu_pub.publish(imu_msg);
-      if (validGPS)
+      }
+      if (validGPS) {
+        ROS_INFO("Publishing valid GPS message");
         nav_pub.publish(gps_msg);
+      }
     } catch (const std::exception& e) {
       ROS_ERROR("Reading from INS driver failed");
     }

@@ -102,29 +102,26 @@ void WatsonINSDriver::read(sensor_msgs::Imu &imuMsg,
                               sizeof(struct ins_data_t) - bytesRead);
   } 
 
-  while (true) {
-    switch (insData.dataType[0]) {
-      case 'G':
-      case 'T':
-        ROS_INFO("Both GPS and IMU data is available");
-        parseGPS(fixMsg);
-        parseIMU(imuMsg);
-        validImu = validFix = true;
-        break;
-      case 'I':
-        ROS_INFO("Only IMU data is available");
-        parseIMU(imuMsg);
-        validImu = true;
-        break;
-      case 'g':
-      case 't':
-      case 'i':
-      case 'r':
-        ROS_WARN("Calculated altitude/heading error exceeds ranges");
-        break;
-      default:
-        return;
-    }
+  switch (insData.dataType[0]) {
+    case 'G':
+    case 'T':
+      parseGPS(fixMsg);
+      parseIMU(imuMsg);
+      validImu = validFix = true;
+      break;
+    case 'I':
+      ROS_INFO("Only IMU data is available");
+      parseIMU(imuMsg);
+      validImu = true;
+      break;
+    case 'g':
+    case 't':
+    case 'i':
+    case 'r':
+      ROS_WARN("Calculated altitude/heading error exceeds ranges");
+      break;
+    default:
+      return;
   }
 }
 
