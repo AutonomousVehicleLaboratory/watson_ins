@@ -1,5 +1,7 @@
 /*
  * Watson DMS-SGP02 INS ROS Node
+ *
+ * Please contact AVL <avl@eng.ucsd.edu> for any inquiries.
  */
 #include "watson_ins_driver.h"
 #include "sensor_msgs/NavSatFix.h"

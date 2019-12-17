@@ -1,5 +1,7 @@
 /*
  * Watson DMS-SGP02 INS ROS Driver
+ *
+ * Please contact AVL <avl@eng.ucsd.edu> for any inquiries.
  */
 #include "watson_ins_driver.h"
 #include <tf2/LinearMath/Quaternion.h>
