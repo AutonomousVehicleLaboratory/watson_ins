@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   sensor_msgs
   genmsg
+  tf2
 )
 
 ## System dependencies are found with CMake's conventions
@@ -117,6 +118,7 @@ catkin_package(
   sensor_msgs 
   message_runtime 
   geometry_msgs
+  tf2
 #  DEPENDS system_lib
 )
 
