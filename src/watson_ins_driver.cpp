@@ -1,6 +1,8 @@
 /*
  * Watson DMS-SGP02 INS ROS Driver
  *
+ * Copyright 2019 AVL
+ *
  * Please contact AVL <avl@eng.ucsd.edu> for any inquiries.
  */
 #include "watson_ins_driver.h"

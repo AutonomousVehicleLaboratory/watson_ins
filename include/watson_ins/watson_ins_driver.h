@@ -1,3 +1,8 @@
+/* 
+ * watson_ins_driver.h
+ *
+ * Copyright 2019 AVL
+ */
 #ifndef WATSON_INS_H
 #define WATSON_INS_H
 #include <serial/serial.h>
